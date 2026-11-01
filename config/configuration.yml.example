@@ -1,0 +1,125 @@
+---
+
+theme: 'auto'
+
+default_2fa_method: 'totp'
+
+totp:
+  disable: false
+  issuer: 'Authelia'
+  algorithm: 'SHA512'
+  digits: 8
+  period: 30
+  skew: 1
+  secret_size: 32
+  allowed_algorithms:
+    - 'SHA1'
+    - 'SHA256'
+    - 'SHA512'
+  allowed_digits:
+    - 6
+    - 8
+  allowed_periods:
+    - 30
+  disable_reuse_security_policy: false
+
+webauthn:
+  disable: false
+  display_name: 'Authelia'
+  attestation_conveyance_preference: 'indirect'
+  timeout: '60s'
+  selection_criteria:
+    discoverability: 'preferred'
+    user_verification: 'preferred'
+
+identity_validation:
+  elevated_session:
+    characters: 8
+    code_lifespan: '5m'
+    elevation_lifespan: '10m'
+    require_second_factor: false
+    skip_second_factor: false
+
+ntp:
+  address: 'udp://time.cloudflare.com:123'
+  version: 4
+  max_desync: '3s'
+  disable_startup_check: false
+  disable_failure: false
+
+server:
+  address: 'tcp://:9091/authelia'
+  disable_healthcheck: true
+  buffers:
+    read: 16384
+    write: 16384
+  timeouts:
+    read: '10s'
+    write: '15s'
+    idle: '30s'
+  endpoints:
+    enable_pprof: false
+    enable_expvars: false
+    authz:
+      auth-request:
+        implementation: 'AuthRequest'
+        authn_strategies:
+          - name: 'HeaderAuthorization'
+            schemes:
+              - 'Basic'
+          - name: 'CookieSession'
+
+log:
+  level: 'error'
+  format: 'text'
+  file_path: '/logs/authelia.log'
+  keep_stdout: true
+
+regulation:
+  modes:
+    - 'ip'
+  max_retries: 3
+  find_time: '10m'
+  ban_time: '5m'
+
+storage:
+  encryption_key: '{{ secret "/run/secrets/authelia_storage_encryption_key" }}'
+  local:
+    path: '/data/db.sqlite3'
+
+authentication_backend:
+  password_reset:
+    disable: true
+  password_change:
+    disable: true
+  file:
+    path: '/config/users_database.yml'
+    watch: false
+    password:
+      algorithm: 'argon2id'
+
+notifier:
+  smtp:
+    address: '{{ secret "/run/secrets/authelia_smtp_address" }}'
+    timeout: '5s'
+    username: '{{ secret "/run/secrets/authelia_smtp_username" }}'
+    password: '{{ secret "/run/secrets/authelia_smtp_password" }}'
+    sender: '{{ secret "/run/secrets/authelia_smtp_sender" }}'
+    disable_html_emails: true
+
+session:
+  name: 'authelia_session'
+  same_site: 'lax'
+  expiration: '12h'
+  inactivity: '2h'
+  remember_me: '1M'
+  secret: '{{ secret "/run/secrets/authelia_session_secret" }}'
+  cookies:
+    - domain: 'example.com'
+      authelia_url: 'https://example.com/authelia'
+
+access_control:
+  default_policy: 'deny'
+  rules:
+    - domain: 'example.com'
+      policy: 'two_factor'

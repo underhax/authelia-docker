@@ -1,0 +1,15 @@
+/home/authelia/logs/*.log {
+    su authelia authelia
+    daily
+    maxsize 1M
+    missingok
+    rotate 7
+    compress
+    delaycompress
+    notifempty
+    create 0600 authelia authelia
+    sharedscripts
+    postrotate
+        docker kill --signal=HUP authelia > /dev/null 2>&1 || true
+    endscript
+}

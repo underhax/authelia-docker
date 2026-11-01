@@ -1,0 +1,80 @@
+name: authelia
+
+services:
+  authelia:
+    image: ghcr.io/underhax/authelia-docker:${AUTHELIA_VERSION:-latest}
+    container_name: authelia
+    restart: always
+    user: "${APP_UID}:${APP_GID}"
+    read_only: true
+    ipc: none
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add: []
+    env_file:
+      - .env
+    environment:
+      - X_AUTHELIA_CONFIG_FILTERS=template
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 384M
+          pids: 50
+    mem_reservation: 64M
+    tmpfs:
+      - /tmp:mode=1777,noexec,nosuid,nodev,size=64m
+    volumes:
+      - ./config:/config:ro,noexec,nosuid,nodev
+      - ./data:/data:rw,noexec,nosuid,nodev
+      - ./logs:/logs:rw,noexec,nosuid,nodev
+      - /etc/localtime:/etc/localtime:ro
+    secrets:
+      - authelia_session_secret
+      - authelia_storage_encryption_key
+      - authelia_smtp_address
+      - authelia_smtp_username
+      - authelia_smtp_password
+      - authelia_smtp_sender
+      # - authelia_jwt_secret
+      # - authelia_oidc_hmac_secret
+      # - authelia_oidc_jwks_key
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/probe"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - frontend_gateway
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+secrets:
+  authelia_session_secret:
+    file: ./secrets/authelia_session_secret
+  authelia_storage_encryption_key:
+    file: ./secrets/authelia_storage_encryption_key
+  authelia_smtp_address:
+    file: ./secrets/authelia_smtp_address
+  authelia_smtp_username:
+    file: ./secrets/authelia_smtp_username
+  authelia_smtp_password:
+    file: ./secrets/authelia_smtp_password
+  authelia_smtp_sender:
+    file: ./secrets/authelia_smtp_sender
+  # authelia_jwt_secret:
+  #   file: ./secrets/authelia_jwt_secret
+  # authelia_oidc_hmac_secret:
+  #   file: ./secrets/authelia_oidc_hmac_secret
+  # authelia_oidc_jwks_key:
+  #   file: ./secrets/authelia_oidc_jwks_key
+
+networks:
+  frontend_gateway:
+    external: true

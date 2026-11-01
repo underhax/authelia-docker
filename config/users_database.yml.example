@@ -1,0 +1,11 @@
+---
+
+users:
+  username:
+    disabled: true
+    displayname: 'Firstname Lastname'
+    password: '$argon2id$...generate_hash_with_authelia_crypto_hash_generate...'
+    email: 'user@example.com'
+    groups:
+      - 'admins'
+      - 'users'
