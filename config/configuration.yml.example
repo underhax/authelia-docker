@@ -80,7 +80,7 @@ regulation:
     - 'ip'
   max_retries: 3
   find_time: '10m'
-  ban_time: '5m'
+  ban_time: '15m'
 
 storage:
   encryption_key: '{{ secret "/run/secrets/authelia_storage_encryption_key" }}'
