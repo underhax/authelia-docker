@@ -205,8 +205,10 @@ When integrating applications via OpenID Connect 1.0, refer to the official [Ope
    sudo chmod 0440 /home/authelia/secrets/*
    ```
 
-2. **Generate Client Secret Hash (Per application):**
+2. **Generate Client ID & Client Secret Hash (Per application):**
    ```bash
+   docker run --rm -it ghcr.io/underhax/authelia-docker:latest crypto rand --length 72 --charset rfc3986
+
    docker run --rm -it ghcr.io/underhax/authelia-docker:latest crypto hash generate pbkdf2 --variant sha512
    ```
 
