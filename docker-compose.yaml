@@ -2,7 +2,7 @@ name: authelia
 
 services:
   authelia:
-    image: ghcr.io/underhax/authelia-docker:${AUTHELIA_VERSION:-latest}
+    image: ghcr.io/underhax/authelia:${AUTHELIA_VERSION:-latest}
     container_name: authelia
     restart: always
     user: "${APP_UID}:${APP_GID}"

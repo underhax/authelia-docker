@@ -163,7 +163,7 @@ sudo nano /home/authelia/secrets/authelia_smtp_password
 1. **Configure `users_database.yml`:**
    Generate an Argon2id password hash for each user:
    ```bash
-   docker run --rm -it ghcr.io/underhax/authelia-docker:latest crypto hash generate argon2
+   docker run --rm -it ghcr.io/underhax/authelia:latest crypto hash generate argon2
    ```
    Edit the database file:
    ```bash
@@ -184,7 +184,7 @@ sudo nano /home/authelia/secrets/authelia_smtp_password
      -e X_AUTHELIA_CONFIG_FILTERS=template \
      -v /home/authelia/config:/config:ro \
      -v /home/authelia/secrets:/run/secrets:ro \
-     ghcr.io/underhax/authelia-docker:latest \
+     ghcr.io/underhax/authelia:latest \
      config validate --config /config/configuration.yml
    ```
 
@@ -196,7 +196,7 @@ When integrating applications via OpenID Connect 1.0, refer to the official [Ope
    ```bash
    openssl rand -hex 64 | sudo tee /home/authelia/secrets/authelia_oidc_hmac_secret > /dev/null
 
-   sudo docker run --rm -v /home/authelia/secrets:/secrets ghcr.io/underhax/authelia-docker:latest \
+   sudo docker run --rm -v /home/authelia/secrets:/secrets ghcr.io/underhax/authelia:latest \
      crypto pair rsa generate --directory /secrets \
      --file.private-key authelia_oidc_jwks_key \
      --file.public-key authelia_oidc_jwks_pub.key
@@ -207,9 +207,9 @@ When integrating applications via OpenID Connect 1.0, refer to the official [Ope
 
 2. **Generate Client ID & Client Secret Hash (Per application):**
    ```bash
-   docker run --rm -it ghcr.io/underhax/authelia-docker:latest crypto rand --length 72 --charset rfc3986
+   docker run --rm -it ghcr.io/underhax/authelia:latest crypto rand --length 72 --charset rfc3986
 
-   docker run --rm -it ghcr.io/underhax/authelia-docker:latest crypto hash generate pbkdf2 --variant sha512
+   docker run --rm -it ghcr.io/underhax/authelia:latest crypto hash generate pbkdf2 --variant sha512
    ```
 
 3. **Configure OIDC Clients and Validate:**
@@ -223,7 +223,7 @@ When integrating applications via OpenID Connect 1.0, refer to the official [Ope
      -e X_AUTHELIA_CONFIG_FILTERS=template \
      -v /home/authelia/config:/config:ro \
      -v /home/authelia/secrets:/run/secrets:ro \
-     ghcr.io/underhax/authelia-docker:latest \
+     ghcr.io/underhax/authelia:latest \
      config validate --config /config/configuration.yml
    ```
 
